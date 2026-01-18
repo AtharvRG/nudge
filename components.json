@@ -1,0 +1,19 @@
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "default",
+  "rsc": true,
+  "tsx": true,
+  "aliases": {
+    "@": "./"
+  },
+  "registries": [
+    {
+      "name": "default",
+      "url": "https://ui.shadcn.com/r"
+    },
+    {
+      "name": "@react-bits",
+      "url": "https://reactbits.dev/r/{name}.json"
+    }
+  ]
+}
