@@ -1,70 +1,108 @@
 "use client";
-import { motion, useScroll, useTransform, useSpring } from "framer-motion";
-import { useRef } from "react";
-import { ArrowDown } from "lucide-react";
+
+import { ArrowRight } from "lucide-react";
 
 export function Hero() {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const { scrollYProgress } = useScroll({
-        target: containerRef,
-        offset: ["start start", "end start"],
-    });
+  return (
+    <section className="relative min-h-screen w-full flex flex-col justify-center items-center overflow-hidden bg-background">
+      {/* Background Ambience */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-zinc-900/50 via-background to-background pointer-events-none" />
 
-    const smoothScroll = useSpring(scrollYProgress, {
-        damping: 15,
-        stiffness: 100,
-    });
+      {/* Centerpiece Text Group */}
+      <div className="relative z-10 w-full max-w-[90vw] mx-auto flex justify-center items-center h-[60vh]">
+        
+        {/* 'private' Accent (Top Left) */}
+        <span className="absolute top-[15%] left-[5%] font-script text-5xl md:text-7xl text-white z-30 -rotate-12 pointer-events-none mix-blend-overlay">
+          private
+        </span>
 
-    // Modified Parallax: The whole text block moves slightly slower than scroll for depth,
-    // but individual layers are LOCKED together (no relative movement).
-    const yBlock = useTransform(smoothScroll, [0, 1], [0, 100]);
+        {/* 'payments' Accent (Bottom Right) */}
+        <span className="absolute bottom-[15%] right-[5%] font-script text-5xl md:text-7xl text-white z-30 -rotate-6 pointer-events-none mix-blend-overlay">
+          payments
+        </span>
 
-    return (
-        <section
-            ref={containerRef}
-            className="relative h-[120vh] flex flex-col items-center justify-start pt-[20vh] overflow-hidden bg-background"
-        >
-            {/* Background Atmosphere */}
-            <div className="absolute inset-0 z-0 pointer-events-none">
-                <div className="absolute top-0 left-0 w-full h-[50vh] bg-gradient-to-b from-neon-pink/5 to-transparent opacity-30" />
-                <div className="absolute bottom-0 right-0 w-[50vw] h-[50vw] bg-neon-orange/10 rounded-full blur-[150px] translate-y-1/2 translate-x-1/2" />
+        {/* The "CREATIVE" (NUDGE) Typography - Double Layer Technique (Per Character) */}
+        <div className="relative w-full flex justify-center items-center gap-4 select-none py-32">
+          {["N", "U", "D", "G", "E"].map((char, index) => (
+            <div key={index} className="relative group">
+              {/* Layer A: Cyan Outline (Top Right - FOREGROUND) */}
+              <span
+                className="absolute inset-0 z-20 text-[40vw] leading-[1.1] font-hero text-transparent pointer-events-none select-none"
+                style={{
+                  WebkitTextStroke: "0.5px #00FFFF", // Cyan
+                  transform: "translate(15px, -15px)",
+                  opacity: 0.6,
+                }}
+              >
+                {char}
+              </span>
+
+              {/* Layer B: Pink Outline (Bottom Left - Inner) */}
+              <span
+                className="absolute inset-0 z-0 text-[40vw] leading-[1.1] font-hero text-transparent pointer-events-none select-none"
+                style={{
+                  WebkitTextStroke: "0.5px #F72798", // Neon Pink
+                  transform: "translate(-15px, 15px)",
+                  opacity: 0.6,
+                }}
+              >
+                {char}
+              </span>
+
+              {/* Layer C: Yellow Outline (Bottom Left - Outer) */}
+              <span
+                className="absolute inset-0 z-0 text-[40vw] leading-[1.1] font-hero text-transparent pointer-events-none select-none"
+                style={{
+                  WebkitTextStroke: "0.5px #EBF400", // Neon Yellow
+                  transform: "translate(-30px, 30px)",
+                  opacity: 0.6,
+                }}
+              >
+                {char}
+              </span>
+
+              {/* Layer D: Main Mask (Center) */}
+              <span
+                className="relative z-10 block text-[40vw] leading-[1.1] font-hero text-transparent bg-clip-text bg-cover bg-center animate-text-reveal"
+                style={{
+                  backgroundImage: "url('/hero-mask.jpg'), linear-gradient(45deg, #FF00aa, #00FFFF)",
+                  transform: "scale(1)",
+                  backgroundPosition: `${index * 20}% 50%`,
+                  backgroundSize: "cover",
+                  backgroundAttachment: "fixed", 
+                }}
+              >
+                {char}
+              </span>
             </div>
+          ))}
+        </div>
+      </div>
 
-            {/* Typography Container */}
-            <motion.div
-                style={{ y: yBlock }}
-                className="relative z-10 w-full max-w-full mx-auto h-[60vh] flex items-center justify-center isolate"
+      {/* Bottom Layout - Footer / Content Grid */}
+      <div className="absolute bottom-0 left-0 right-0 p-10 flex flex-col md:flex-row justify-between items-end z-20 gap-8">
+        
+        {/* Left Column: Services Tags */}
+        <div className="grid grid-cols-2 gap-4 w-full max-w-sm">
+          {['Stealth Addresses', 'ZK Compression', 'Solana Blinks', 'Zero Knowledge'].map((service) => (
+            <div 
+              key={service}
+              className="group cursor-pointer border border-white/30 rounded-[50px] px-8 py-4 text-center transition-all duration-300 hover:bg-white hover:border-white hover:scale-105"
             >
-                {/* Layer 3: Main Image Fill - CENTER */}
-                <div className="relative z-20 flex items-center justify-center">
-                    <h1
-                        className="text-[25vw] leading-none font-display font-black tracking-[0.05em] text-transparent bg-clip-text bg-cover bg-center select-none drop-shadow-[0_20px_50px_rgba(0,0,0,0.8)]"
-                    >
-                        <span className="bg-clip-text text-transparent bg-white bg-fixed bg-cover bg-center">
-                            NUDGE
-                        </span>
-                    </h1>
-                </div>
-            </motion.div>
+              <span className="text-base md:text-lg font-body uppercase text-white group-hover:text-black transition-colors block tracking-wider">
+                {service}
+              </span>
+            </div>
+          ))}
+        </div>
 
-            {/* Readability Improved Subtext */}
-            <motion.div
-                style={{ y: yBlock }}
-                className="relative z-40 text-center max-w-3xl px-6 -mt-10 md:-mt-20"
-            >
-                <h2 className="text-3xl md:text-5xl font-display text-white py-10 tracking-[0.2em] uppercase mb-6 drop-shadow-[0_2px_10px_rgba(0,0,0,1)]">
-                    Privacy <span className="text-neon-pink">Reimagined</span>
-                </h2>
-            </motion.div>
-
-            {/* Scroll Indicator */}
-            <motion.div
-                animate={{ y: [0, 10, 0] }}
-                transition={{ repeat: Infinity, duration: 2 }}
-                className="absolute bottom-10 z-40 mix-blend-difference"
-            >
-                <ArrowDown className="w-10 h-10 text-white" />
-            </motion.div>
-        </section>
-    );
+        {/* Right Column: Description */}
+        <div className="w-full max-w-[600px] text-right">
+          <p className="text-[#cccccc] text-xl md:text-3xl leading-[1.4] font-body">
+            With Nudge, your financial privacy is paramount. We leverage ZK compression to ensure every transaction is shielded, secure, and stylish. Used by the top Solana power users.
+          </p>
+        </div>
+      </div>
+    </section>
+  );
 }

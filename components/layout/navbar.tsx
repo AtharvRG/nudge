@@ -1,58 +1,34 @@
-
-"use client";
-
 import Link from "next/link";
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
-import { useEffect, useState } from "react";
-import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 export function Navbar() {
-    const [scrolled, setScrolled] = useState(false);
+  return (
+    <nav className="fixed top-0 left-0 right-0 z-50 p-6 md:px-12 flex items-center justify-between bg-transparent pointer-events-none">
+      <div className="flex items-center gap-3 pointer-events-auto">
+        <div className="w-10 h-10 md:w-12 md:h-12 relative rounded-lg overflow-hidden border border-white/20">
+          <Image 
+            src="/nudge-symbol.jpg" 
+            alt="Nudge Protocol Logo" 
+            fill
+            className="object-cover"
+          />
+        </div>
+        <span className="font-bold text-xs tracking-[0.2em] uppercase text-white/80 hidden sm:block">
+          NUDGE PRIVACY PROTOCOL
+        </span>
+      </div>
 
-    useEffect(() => {
-        const handleScroll = () => {
-            setScrolled(window.scrollY > 50);
-        };
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, []);
-
-    return (
-        <nav
-            className={cn(
-                "fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-12 py-6 transition-all duration-500",
-                scrolled ? "bg-background/90 backdrop-blur-md py-4 border-b border-white/5" : "bg-transparent"
-            )}
-        >
-            {/* Logo */}
-            <Link href="/" className="group relative z-50">
-                <span className="text-4xl font-display text-white group-hover:text-neon-pink transition-colors duration-300">
-                    Nudge
-                    <span className="text-neon-yellow">.</span>
-                </span>
-            </Link>
-
-            {/* Desktop Links (Placeholder for now) */}
-            <div className="hidden md:flex gap-8 items-center text-sm font-body uppercase tracking-widest text-zinc-400">
-                <Link href="#features" className="hover:text-white transition-colors">Features</Link>
-                <Link href="#how-it-works" className="hover:text-white transition-colors">How it works</Link>
-                <Link href="/pricing" className="hover:text-white transition-colors">Pricing</Link>
-            </div>
-
-            {/* Wallet Button - Styled to match theme */}
-            <div className="z-50">
-                <WalletMultiButton style={{
-                    backgroundColor: "transparent",
-                    border: "1px solid white",
-                    borderRadius: "0px",
-                    color: "white",
-                    fontFamily: "var(--font-display)",
-                    textTransform: "uppercase",
-                    fontSize: "14px",
-                    height: "48px",
-                    padding: "0 24px",
-                }} />
-            </div>
-        </nav>
-    );
+      <div className="flex items-center gap-8 pointer-events-auto">
+        {["FEATURES", "DOCS", "APP"].map((item) => (
+          <Link
+            key={item}
+            href={`#${item.toLowerCase()}`}
+            className="text-white/80 text-md md:text-lg font-medium tracking-[0.2em] hover:text-cyan-400 transition-colors uppercase"
+          >
+            {item}
+          </Link>
+        ))}
+      </div>
+    </nav>
+  );
 }

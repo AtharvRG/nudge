@@ -9,7 +9,7 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "rgb(18, 18, 18)",
+        background: "#111111",
         foreground: "#ffffff",
         neon: {
           pink: "rgb(247, 39, 152)",
@@ -20,6 +20,8 @@ const config: Config = {
       fontFamily: {
         display: ["var(--font-display)", "serif"],
         body: ["var(--font-body)", "sans-serif"],
+        script: ["var(--font-script)", "cursive"],
+        hero: ["var(--font-anton)", "sans-serif"],
         mono: ["var(--font-mono)", "monospace"],
       },
       backgroundImage: {

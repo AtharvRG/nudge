@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { Dancing_Script, Archivo_Black } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 
@@ -11,6 +12,17 @@ const csDespina = localFont({
 const popfine = localFont({
   src: "./fonts/POPFINERegular.otf",
   variable: "--font-body",
+});
+
+const dancingScript = Dancing_Script({
+  subsets: ["latin"],
+  variable: "--font-script",
+});
+
+const archivoBlack = Archivo_Black({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-anton", // Keeping var name to avoid breaking tailwind
 });
 
 export const metadata: Metadata = {
@@ -28,7 +40,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${csDespina.variable} ${popfine.variable} min-h-screen bg-background text-foreground antialiased overflow-x-hidden font-body`}>
+      <body className={`${csDespina.variable} ${popfine.variable} ${dancingScript.variable} ${archivoBlack.variable} min-h-screen bg-background text-foreground antialiased overflow-x-hidden font-body`}>
         <Providers>{children}</Providers>
       </body>
     </html>
