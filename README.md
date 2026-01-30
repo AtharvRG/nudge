@@ -1,53 +1,317 @@
-# 🛡️ Nudge - Private Payments on Solana
+# Nudge - Private Solana Payment Links
 
-> **ZK-Shielded Payments via Shareable Blink URLs — Powered by Noir & Light Protocol**
+Nudge is a privacy-focused payment platform that enables secure, shareable payment links on Solana using zero-knowledge proofs and stealth addresses. Users can receive payments to unlinkable addresses without revealing their main wallet identity on-chain, powered by Noir ZK circuits and Light Protocol compression.
 
-Nudge is a privacy-first payment platform that turns any Solana wallet into a secure, shareable "Blink" URL. When someone pays via your link, funds are routed through **dual ZK systems** — Noir proofs for identity verification and Light Protocol for on-chain compression — depositing into a fresh, unlinked stealth address. Your main wallet identity is **never revealed on-chain**.
+## Overview
 
-![Solana](https://img.shields.io/badge/Solana-Devnet-9945FF?style=for-the-badge&logo=solana)
-![Noir](https://img.shields.io/badge/Noir-ZK_Proofs-FF6B35?style=for-the-badge)
-![Light Protocol](https://img.shields.io/badge/Light_Protocol-Compression-10B981?style=for-the-badge)
-![Next.js](https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js)
-![Helius](https://img.shields.io/badge/Helius-RPC-E84D3D?style=for-the-badge)
+Nudge transforms Solana wallet payments into private transactions through a dual-layer privacy system. When someone pays via your shareable Blink URL, the payment is routed through Noir zero-knowledge proofs for identity verification and Light Protocol for on-chain compression, depositing funds into a cryptographically derived stealth address that has no traceable link to your main wallet.
 
----
+## Key Features
 
-## 🏆 Hackathon Tracks
+### Core Privacy Features
+- **Stealth Addresses**: Generate unlinkable payment addresses derived from your wallet signature using deterministic key derivation
+- **Zero-Knowledge Proofs**: Noir-based circuits verify payment ownership without revealing sender or receiver identity
+- **On-Chain Compression**: Light Protocol reduces transaction footprint while maintaining full security and verifiability
+- **Non-Custodial**: Full control over your funds with recovery via viewing keys and wallet signature
 
-This project is built for multiple hackathon tracks:
+### User Experience
+- **Shareable Payment Links**: Create custom Blink URLs with memorable slugs for easy payment sharing
+- **Link Management**: Create, edit, and delete payment links with granular control and labeling
+- **Real-Time Dashboard**: Monitor received payments, active links, transaction history, and pool balances
+- **Wallet Integration**: Works seamlessly with Phantom, Solflare, and other Solana wallets via Wallet Adapter
+- **Tier System**: Free tier with link limits, Pro and Enterprise for power users
 
-| Track | Implementation |
-|-------|----------------|
-| **Noir ZK Proofs** | Client-side proof generation for stealth identity verification |
-| **Helius DevTools** | RPC infrastructure with ZK compression prover service |
-| **Solana Actions/Blinks** | Shareable payment links with embedded transactions |
-| **Privacy Infrastructure** | End-to-end private payments on Solana |
+### Security & Compliance
+- **Military-Grade Encryption**: ECDSA signatures with Solana's native cryptography standards
+- **Transaction Verification**: All transactions verified on-chain with Noir proofs
+- **Compliance Tools**: Export viewing keys for tax and audit purposes
+- **No Private Key Custody**: Your keys remain in your wallet at all times
 
----
+## Technology Stack
 
-## 🎯 What Makes Nudge Special
+### Frontend
+- **Framework**: Next.js 16 with React 19
+- **Styling**: Tailwind CSS with Radix UI components
+- **Animation**: Framer Motion for smooth UI transitions
+- **Charts**: Recharts for transaction analytics
+- **Icons**: Lucide React
 
-| Feature | Description |
-|---------|-------------|
-| **Dual ZK System** | Noir for identity proofs + Light Protocol for on-chain compression |
-| **Stealth Addresses** | Deterministic keypair derived from wallet signature |
-| **Custom Blink Slugs** | Nameable links like `dial.to/...nudge?id=coffee-tips` |
-| **Premium Dashboard** | Awwwards-quality UI with real-time analytics |
-| **Link Management** | Create, edit, delete up to 15 links (unlimited for Pro) |
-| **Non-Custodial** | You always control your funds |
-| **Compliance Ready** | Export viewing keys for tax/audit purposes |
+### Backend & Blockchain
+- **Solana Integration**: @solana/web3.js with Wallet Adapter
+- **Privacy Proofs**: Noir ZK circuits via @noir-lang/noir_js
+- **Compression**: Light Protocol stateless.js for transaction optimization
+- **Database**: Supabase for link and transaction metadata
+- **RPC**: Helius for optimized Solana devnet/mainnet connectivity
 
----
+### Cryptography
+- **ZK Framework**: Noir beta with Barretenberg backend
+- **Key Derivation**: TweetNaCl for signature-based stealth address generation
+- **Encoding**: Base58 for Solana address compatibility, BN.js for big number operations
 
-## 🔐 How It Works
-
-### The Privacy Flow
+## Project Structure
 
 ```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                           NUDGE PRIVACY FLOW                                │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
+nudge/
+├── app/
+│   ├── page.tsx                 # Landing page with hero, features, how-it-works
+│   ├── layout.tsx               # Root layout with providers
+│   ├── globals.css              # Global styles and animations
+│   ├── dashboard/               # Protected dashboard routes
+│   │   ├── page.tsx             # Main dashboard with stats and transactions
+│   │   ├── links/               # Link management interface
+│   │   ├── pool/                # Pool balance visualization
+│   │   ├── profile/             # User settings and tier management
+│   │   └── pricing/             # Tier comparison
+│   └── api/
+│       ├── actions/nudge/       # Solana Action/Blink endpoint
+│       ├── light/               # Light Protocol RPC and compression proofs
+│       ├── links/               # Link CRUD operations
+│       └── payments/            # Payment confirmation and settlement
+├── components/
+│   ├── landing/                 # Hero, features, CTA sections
+│   ├── dashboard/               # Dashboard cards and widgets
+│   ├── app/                     # Auth dialogs, sidebar, navigation
+│   └── ui/                      # Reusable Radix UI components
+├── lib/
+│   ├── light.ts                 # Light Protocol integration and compressed operations
+│   ├── noir.ts                  # Noir ZK proof generation and verification
+│   ├── stealth.ts               # Stealth address derivation utilities
+│   ├── supabase.ts              # Database client and queries
+│   ├── types.ts                 # TypeScript interfaces
+│   └── utils.ts                 # Helper functions
+├── contexts/
+│   ├── auth-context.tsx         # Wallet auth and user state
+│   └── user-context.tsx         # User profile and preferences
+└── supabase/
+    └── schema.sql               # Database schema for links and transactions
+```
+
+## How Nudge Works
+
+### Payment Flow
+
+1. **Link Creation**: User creates a payment link in dashboard, which generates a new stealth address via Noir proof
+2. **Sharing**: User shares the Blink URL with custom slug (e.g., nudge?id=coffee-tips)
+3. **Payment**: Payer clicks link, which initiates Solana Action with embedded transaction
+4. **Compression**: Light Protocol compresses the transaction to reduce on-chain footprint
+5. **Verification**: Noir ZK circuit verifies payment authenticity without revealing identities
+6. **Settlement**: Funds arrive in stealth address, fully separated from payer's main wallet
+7. **Withdrawal**: User withdraws to main wallet with full proof chain for compliance
+
+### Stealth Address System
+
+- **Derivation**: Each payment link generates a unique stealth address using ECDSA signature + deterministic path
+- **Unlinkability**: No mathematical relationship between stealth address and main wallet public key
+- **Recovery**: User can always recover stealth addresses using their main wallet signature as seed
+- **Verification**: Noir circuit proves ownership without revealing the derivation path
+
+### Zero-Knowledge Proofs
+
+- **Privacy Circuit**: Verifies payment amounts and destinations without exposing actual values
+- **Ownership Proof**: Proves control of stealth address without revealing the corresponding private key
+- **Compliance**: Generates verifiable proofs that can be audited or shared with regulators
+
+## Getting Started
+
+### Prerequisites
+- Node.js 18+ and npm/yarn
+- Solana wallet (Phantom, Solflare, etc.)
+- Supabase account for database (optional for development)
+
+### Installation
+
+```bash
+# Clone repository
+git clone https://github.com/AtharvRG/nudge.git
+cd nudge
+
+# Install dependencies
+npm install
+
+# Configure environment variables
+cp .env.example .env.local
+# Edit .env.local with your Supabase and RPC URLs
+```
+
+### Environment Variables
+
+```
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+NEXT_PUBLIC_SOLANA_NETWORK=devnet
+NEXT_PUBLIC_HOST_URL=http://localhost:3000
+HELIUS_API_KEY=your_helius_key
+```
+
+### Running Locally
+
+```bash
+# Development server
+npm run dev
+
+# Open http://localhost:3000
+```
+
+### Building for Production
+
+```bash
+# Build
+npm run build
+
+# Start production server
+npm start
+```
+
+## Features by Tier
+
+### Free Tier
+- 10 custom payment links
+- Basic link analytics
+- Standard dashboard
+- Community support
+
+### Pro Tier
+- 50 custom payment links
+- Advanced analytics and exports
+- Priority support
+- Batch operations
+
+### Enterprise
+- Unlimited payment links
+- API access
+- Dedicated support
+- Custom integrations
+
+## Database Schema
+
+### Links Table
+- `id`: UUID primary key
+- `owner_id`: User's wallet public key
+- `slug`: Custom URL path
+- `stealth_public_key`: Generated stealth address for this link
+- `title`: Link display name
+- `is_active`: Whether link accepts payments
+- `total_received`: Total SOL received via this link
+- `created_at`: Creation timestamp
+
+### Transactions Table
+- `id`: UUID primary key
+- `link_id`: Reference to payment link
+- `amount`: SOL amount received
+- `sender`: Payer's wallet (or "Unknown" if private)
+- `signature`: Solana transaction signature
+- `timestamp`: Transaction time
+- `status`: pending/confirmed/failed
+- `is_withdrawn`: Whether funds have been withdrawn
+
+### Users Table
+- `id`: UUID primary key
+- `public_key`: Solana wallet address
+- `display_name`: User's chosen name
+- `pin_hash`: Hashed PIN for security
+- `tier`: free/pro/enterprise subscription level
+- `created_at`: Account creation time
+
+## API Endpoints
+
+### Links Management
+- `GET /api/links?userId=<id>` - Fetch user's payment links
+- `POST /api/links` - Create new payment link
+- `PUT /api/links/[id]` - Update link details
+- `DELETE /api/links/[id]` - Delete link
+
+### Solana Actions (Blink)
+- `GET /api/actions/nudge?id=<stealth_key>` - Blink transaction endpoint
+
+### Light Protocol
+- `POST /api/light/balance` - Get shielded account balance
+- `POST /api/light/unshield-data` - Prepare unshielding transaction
+
+### Payments
+- `POST /api/payments/confirm` - Confirm and verify payment
+
+## Security Considerations
+
+### On-Chain Privacy
+- Stealth addresses have no discernible link to main wallet on Solana blockchain
+- Light Protocol compression removes intermediate state tree entries
+- Noir proofs verify transactions without exposing plaintexts
+
+### Off-Chain Security
+- Wallet private keys never leave user's device
+- Database stores only public data (addresses, metadata)
+- Transaction signatures required for all operations
+- All API endpoints validate wallet signatures
+
+### Compliance & Auditability
+- Viewing keys enable tax compliance without exposing full details
+- Noir proofs can be publicly verified
+- Transaction history is immutable on-chain
+- Withdrawal proofs provide full audit trail
+
+## Development Roadmap
+
+### Current (MVP)
+- Core stealth address generation
+- Noir proof verification
+- Light Protocol compression
+- Blink URL sharing
+- Basic dashboard
+
+### Planned
+- Multi-chain support (other privacy chains)
+- Advanced analytics dashboard
+- Batch withdrawal operations
+- Webhook notifications
+- API rate limiting and management
+- Mobile application
+- Hardware wallet support
+
+## Testing
+
+Currently uses Solana devnet. To test:
+
+1. Get devnet SOL from faucet
+2. Connect Phantom/Solflare wallet in development
+3. Create a payment link
+4. Share the Blink URL
+5. Verify transactions appear in dashboard
+
+## Contributing
+
+Contributions welcome! Areas for improvement:
+- Enhanced Noir circuit optimizations
+- Alternative ZK backends
+- Additional Solana compression methods
+- UI/UX improvements
+- Documentation and examples
+
+## License
+
+MIT License - see LICENSE file for details
+
+## Support & Community
+
+- GitHub Issues: Report bugs and feature requests
+- Discussions: Community Q&A and ideas
+- Documentation: Full technical docs at /docs
+
+## Acknowledgments
+
+Built during Solana hackathons with support from:
+- Light Protocol team
+- Noir / Aztec community
+- Solana Ecosystem
+
+## Authors
+
+- **AtharvRG** - Core architecture, Light Protocol integration, Noir circuits
+- **krishnagoyal099** - Dashboard UI, wallet integration, database design
+
+---
+
+**Status**: Active development on Solana devnet. Production deployment coming soon.
+
 │  1. RECIPIENT                         2. SENDER                             │
 │  ┌──────────────┐                     ┌──────────────┐                     │
 │  │ Main Wallet  │                     │ Main Wallet  │                     │
