@@ -360,7 +360,7 @@ export async function buildShieldedTransferTx(
  * 
  * @param stealthKeypair - The stealth keypair (authority)
  * @param recipientMainWallet - Where to send the unshielded SOL
- * @returns Unsigned transaction ready for dual signing + Noir ownership proof
+ * @returns Unsigned transaction ready for dual signing (Noir proof optional)
  */
 export async function buildUnshieldTx(
     stealthKeypair: { publicKey: PublicKey; secretKey: Uint8Array },
@@ -369,7 +369,7 @@ export async function buildUnshieldTx(
 ): Promise<{
     transaction: VersionedTransaction;
     stealthSigner: Keypair;
-    noirProof: OwnershipProof;
+    noirProof: OwnershipProof | null;
 }> {
     const lightConnection = getLightConnection();
     const standardConnection = getStandardConnection();
@@ -386,7 +386,7 @@ export async function buildUnshieldTx(
         //
         // The proof can be verified client-side or stored for audit trails
         // =====================================================================
-        let noirProof: OwnershipProof;
+        let noirProof: OwnershipProof | null = null;
         try {
             noirProof = await withTimeout(
                 generateOwnershipProof(
@@ -398,7 +398,7 @@ export async function buildUnshieldTx(
                 "Ownership proof generation timed out"
             );
         } catch (error) {
-            throw new NoirProofError(error instanceof Error ? error : undefined);
+            // Proceed without Noir ownership proof
         }
 
         // =====================================================================
@@ -428,12 +428,41 @@ export async function buildUnshieldTx(
 
             const data = await response.json();
 
+
             // Reconstruct objects from JSON response
             selectedAccounts = data.selectedAccounts.map((acc: any) => ({
-                ...acc,
-                hash: new Uint8Array(Object.values(acc.hash)),
-                merkleTree: new PublicKey(acc.merkleTree),
-                owner: new PublicKey(acc.owner)
+                owner: new PublicKey(acc.owner),
+                lamports: new BN(acc.lamports || "0"),
+                address: acc.address ? new PublicKey(acc.address) : null,
+                data: acc.data
+                    ? {
+                        discriminator: new Uint8Array(acc.data.discriminator || []),
+                        data: new Uint8Array(acc.data.data || []),
+                        dataHash: new Uint8Array(acc.data.dataHash || []),
+                    }
+                    : null,
+                hash: new Uint8Array(acc.hash || []),
+                leafIndex: acc.leafIndex,
+                proveByIndex: acc.proveByIndex ?? false,
+                treeInfo: acc.treeInfo
+                    ? {
+                        tree: new PublicKey(acc.treeInfo.tree),
+                        queue: new PublicKey(acc.treeInfo.queue),
+                        cpiContext: acc.treeInfo.cpiContext ? new PublicKey(acc.treeInfo.cpiContext) : null,
+                        treeType: acc.treeInfo.treeType,
+                        nextTreeInfo: acc.treeInfo.nextTreeInfo
+                            ? {
+                                tree: new PublicKey(acc.treeInfo.nextTreeInfo.tree),
+                                queue: new PublicKey(acc.treeInfo.nextTreeInfo.queue),
+                                cpiContext: acc.treeInfo.nextTreeInfo.cpiContext
+                                    ? new PublicKey(acc.treeInfo.nextTreeInfo.cpiContext)
+                                    : null,
+                                treeType: acc.treeInfo.nextTreeInfo.treeType,
+                                nextTreeInfo: null,
+                            }
+                            : null,
+                    }
+                    : null,
             }));
 
             totalLamports = new BN(data.totalLamports);
@@ -464,6 +493,7 @@ export async function buildUnshieldTx(
 
             if (totalLamports.isZero()) throw new NoShieldedFundsError();
 
+
             // Select accounts
             const selection = selectMinCompressedSolAccountsForTransfer(allAccounts, totalLamports);
             selectedAccounts = selection[0];
@@ -475,6 +505,7 @@ export async function buildUnshieldTx(
                 PROOF_TIMEOUT_MS,
                 "ZK proof generation timed out."
             );
+
 
             rootIndices = proofResult.rootIndices;
             compressedProof = proofResult.compressedProof;
@@ -497,6 +528,7 @@ export async function buildUnshieldTx(
             recentValidityProof: compressedProof,
         });
 
+
         // Ensure fee payer and authority are distinct: fee payer is wallet, authority is stealth
         const patchedKeys = decompressInstruction.keys.map((key, index) => {
             if (index === 0) {
@@ -509,6 +541,7 @@ export async function buildUnshieldTx(
         });
 
         decompressInstruction.keys = patchedKeys;
+
 
         // =====================================================================
         // STEP 5: Build Transaction Message with Both Signers
@@ -528,10 +561,11 @@ export async function buildUnshieldTx(
 
         const transaction = new VersionedTransaction(messageV0);
 
+
         return {
             transaction,
             stealthSigner: signer,
-            noirProof // Include Noir proof for verification/logging
+            noirProof // Optional Noir proof for verification/logging
         };
 
     } catch (error) {

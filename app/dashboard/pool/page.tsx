@@ -144,7 +144,7 @@ export default function PoolPage() {
         setPoolError(null);
         try {
             const keypair = await ensureStealthKey();
-            const { transaction, stealthSigner, noirProof } = await buildUnshieldTx(keypair, publicKey, publicKey);
+            const { transaction, stealthSigner } = await buildUnshieldTx(keypair, publicKey, publicKey);
 
             // Pre-sign with stealth authority, then wallet signs as fee payer
             transaction.sign([stealthSigner]);

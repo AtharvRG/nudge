@@ -57,10 +57,42 @@ export async function POST(req: NextRequest) {
             []
         );
 
-        // 4. Return the data needed to build the instruction on the client
-        // We return the raw data so the client can reconstruct the objects
+        // 4. Return JSON-safe data for client reconstruction
+        const serializedAccounts = selectedAccounts.map((acc) => ({
+            owner: acc.owner?.toBase58(),
+            lamports: acc.lamports?.toString(),
+            address: acc.address ? new PublicKey(acc.address).toBase58() : null,
+            data: acc.data
+                ? {
+                    discriminator: Array.from(acc.data.discriminator || []),
+                    data: Array.from(acc.data.data || []),
+                    dataHash: Array.from(acc.data.dataHash || []),
+                }
+                : null,
+            hash: acc.hash ? Array.from(bn(acc.hash).toArray("be", 32)) : [],
+            leafIndex: acc.leafIndex,
+            proveByIndex: acc.proveByIndex ?? false,
+            treeInfo: acc.treeInfo
+                ? {
+                    tree: acc.treeInfo.tree?.toBase58(),
+                    queue: acc.treeInfo.queue?.toBase58(),
+                    cpiContext: acc.treeInfo.cpiContext?.toBase58() ?? null,
+                    treeType: acc.treeInfo.treeType,
+                    nextTreeInfo: acc.treeInfo.nextTreeInfo
+                        ? {
+                            tree: acc.treeInfo.nextTreeInfo.tree?.toBase58(),
+                            queue: acc.treeInfo.nextTreeInfo.queue?.toBase58(),
+                            cpiContext: acc.treeInfo.nextTreeInfo.cpiContext?.toBase58() ?? null,
+                            treeType: acc.treeInfo.nextTreeInfo.treeType,
+                            nextTreeInfo: null,
+                        }
+                        : null,
+                }
+                : null,
+        }));
+
         return NextResponse.json({
-            selectedAccounts,
+            selectedAccounts: serializedAccounts,
             totalLamports: totalLamports.toString(),
             rootIndices: proofResult.rootIndices,
             compressedProof: proofResult.compressedProof,
